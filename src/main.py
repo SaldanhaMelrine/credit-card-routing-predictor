@@ -125,8 +125,8 @@ def main():
     print(f"Post-Prediction Success Rate : {post_success_rate:.2f}")
 
     # Transaction fee metric
-    print(f"Pre-Prediction Average Transaction Fee: {post_model_fees:.2f}")
-    print(f"Post-Prediction Average Transaction Fee: {pre_model_fees:.2f}")
+    print(f"Pre-Prediction Average Transaction Fee: {pre_model_fees:.2f}")
+    print(f"Post-Prediction Average Transaction Fee: {post_model_fees:.2f}")
 
     print("Process complete.")
 
