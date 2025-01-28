@@ -92,7 +92,7 @@ def preprocess_data(df):
     # Calculate Pre-Prediction Success Rate
     pre_success_rate = df[df['success'] == 1].shape[0] / df.shape[0]  
 
-    # Calculatation for fee Optimization
+    # Calculation for fee Optimization
     pre_model_fees = df['psp_success_cost'].mean()
 
     return df, le_psp, pre_success_rate, pre_model_fees
