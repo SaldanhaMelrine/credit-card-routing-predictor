@@ -6,6 +6,7 @@ from model import train_model, train_baseline_model, evaluate_model, recommend_p
 from feature_engineering import define_features_and_target
 from data_visualization import plot_roc_curve, plot_precision_recall_curve, plot_learning_curve
 import matplotlib.pyplot as plt
+import pandas as pd
 import os
 
 def main():
@@ -28,7 +29,7 @@ def main():
     print(f"Data loaded. Shape: {df.shape}")
 
     print("Preprocessing data...")
-    df = preprocess_data(df)
+    df, le_psp, pre_success_rate, pre_model_fees = preprocess_data(df)
     print(f"Data preprocessed. Shape: {df.shape}")
 
     # Define features and target
@@ -93,22 +94,45 @@ def main():
     print(f"Confusion matrix saved to: {output_path}")
     plt.close()
 
+    # Feature Importance Mapping
+    feature_importances = model.feature_importances_
+    features = X.columns  
+
+    # DataFrame for feature importances
+    feature_importance_df = pd.DataFrame({
+        'Feature': features,
+        'Importance': feature_importances
+    })
+
+    feature_importance_df = feature_importance_df.sort_values(by='Importance', ascending=False)
+
+    print("Feature Importance:")
+    print(feature_importance_df)
+
+
     # Apply the model and recommend PSPs
     print("Generating PSP recommendations...")
-    recommendations = recommend_psp(
-        df_features=X_test,
-        df_original=df[df.index.isin(X_test.index)],
-        model=model,
-        fee_structure=fee_structure,
-        threshold=0.6
-    )
+    recommendations, post_success_rate, post_model_fees = recommend_psp(X_test, df[df.index.isin(X_test.index)], model, fee_structure, le_psp)
 
     # Displaying PSP Recommendations
     print("PSP Recommendations:")
-    print(recommendations[['amount', 'predicted_psp', 'psp_success_percentage', 'cost']])
+
+    # Recommendation output
+    print(recommendations[['amount', 'recommended_psp', 'psp_success_probability', 'psp_cost']])
+
+    #Success Rate metric
+    print(f"Pre-Prediction Success Rate: {pre_success_rate:.2f}")
+    print(f"Post-Prediction Success Rate : {post_success_rate:.2f}")
+
+    # Transaction fee metric
+    print(f"Pre-Prediction Average Transaction Fee: {post_model_fees:.2f}")
+    print(f"Post-Prediction Average Transaction Fee: {pre_model_fees:.2f}")
 
     print("Process complete.")
 
 
 if __name__ == "__main__":
     main()
+
+
+    
